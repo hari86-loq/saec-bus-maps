@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>SAEC Bus Map</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <button class="brand" data-view="home" aria-label="SAEC Bus Map home">
+      <span class="brand-mark">SA</span>
+      <span><b>SAEC</b><small>BUS MAP</small></span>
+    </button>
+    <div class="clock-wrap">
+      <div id="liveClock">--:--:--</div>
+      <small>INDIA · ASIA/KOLKATA</small>
+    </div>
+    <button type="button" class="theme-switch" id="themeToggle" aria-label="Switch to light mode" aria-pressed="false" title="Toggle dark/light mode">
+      <span class="theme-switch-moon" aria-hidden="true">☾</span>
+      <span class="theme-switch-sun" aria-hidden="true">☀</span>
+      <span class="theme-switch-track"><span class="theme-switch-thumb" id="themeSwitchIcon">☾</span></span>
+    </button>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu"><i></i><i></i><i></i></button>
+  </header>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head"><span>Navigation</span><button id="closeMenu">×</button></div>
+    <button data-view="home">⌂ <span>Home</span></button>
+    <button data-view="dashboard">▦ <span>Dashboard</span></button>
+    <button data-view="tracking">◉ <span>Bus Tracking</span></button>
+    <button data-view="buses">▣ <span>Buses</span></button>
+    <button data-view="routes">↗ <span>Routes & Stops</span></button>
+    <button data-view="schedules">◷ <span>Schedules</span></button>
+    <button data-view="traffic">≈ <span>Traffic Analysis</span></button>
+    <button data-view="search">⌕ <span>Search</span></button>
+    <button data-view="settings">⚙ <span>Settings</span></button>
+    <button data-view="about">ⓘ <span>About</span></button>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main id="main">
+    <section class="view active" id="view-home">
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">COLLEGE TRANSPORT · SCHEDULED SIMULATION</div>
+          <h1>Every stop.<br><em>Every minute.</em></h1>
+          <p>A clean timetable-driven bus map for Syed Ammal Engineering College. No GPS — the bus moves only where the schedule says it should.</p>
+          <div class="hero-actions">
+            <button class="primary" data-view="tracking">Open Schedule Map →</button>
+            <button class="ghost" data-view="buses">Explore Buses</button>
+          </div>
+        </div>
+        <div class="hero-clock">
+          <span class="ring r1"></span><span class="ring r2"></span>
+          <div class="clock-core"><small>SCHEDULE CLOCK</small><strong id="heroClock">--:--</strong><span id="heroDate">--</span></div>
+        </div>
+      </div>
+      <div class="quick-grid">
+        <button class="quick-card" data-view="dashboard"><span>01</span><b>Dashboard</b><small>Timing + route overview</small></button>
+        <button class="quick-card" data-view="tracking"><span>02</span><b>Tracking</b><small>Watch the bus move by time</small></button>
+        <button class="quick-card" data-view="buses"><span>03</span><b>Bus Directory</b><small>Numbers, routes and stops</small></button>
+        <button class="quick-card" data-view="traffic"><span>04</span><b>Traffic</b><small>Peak-day simulation</small></button>
+      </div>
+      <div class="note-strip"><span class="live-dot"></span><b>Scheduled simulation</b><span>Position is calculated from the timetable, not GPS.</span></div>
+    </section>
+
+    <section class="view" id="view-dashboard">
+      <div class="section-head"><div><span class="eyebrow">01 · OVERVIEW</span><h2>Transport Dashboard</h2></div><button class="ghost" data-view="tracking">Open tracker →</button></div>
+      <div class="metric-grid" id="metrics"></div>
+      <div class="dashboard-grid">
+        <article class="panel">
+          <div class="panel-head"><div><span class="eyebrow">WEEK</span><h3>Traffic rhythm</h3></div></div>
+          <div class="week-bars" id="weekBars"></div>
+          <small class="muted">Illustrative traffic model — not live road data.</small>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span class="eyebrow">NEXT</span><h3>Scheduled arrivals</h3></div></div>
+          <div id="upcoming"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="view" id="view-tracking">
+      <div class="section-head">
+        <div><span class="eyebrow">02 · MOVEMENT</span><h2>Bus Tracking</h2></div>
+        <div class="seg"><button class="active" data-session="morning">Morning</button><button data-session="evening">Evening</button></div>
+      </div>
+      <div class="tracker-toolbar">
+        <label>Dataset <select id="datasetSelect"><option value="general">College timetable</option><option value="firstYear">First-year timetable</option></select></label>
+        <label>Bus <select id="busSelect"></select></label>
+      </div>
+      <div class="tracking-layout">
+        <article class="route-panel panel">
+          <div class="route-top"><div><span class="eyebrow" id="routeLabel">MORNING ROUTE</span><h3 id="trackingTitle">Bus</h3></div><div class="status-pill" id="statusPill">SCHEDULED</div></div>
+          <div class="route-map" id="routeMap"></div>
+          <div class="route-foot"><div><small>Current</small><b id="currentStop">—</b></div><div><small>Next</small><b id="nextStop">—</b></div><div><small>College</small><b id="collegeTime">—</b></div></div>
+        </article>
+        <aside class="panel detail-panel">
+          <span class="eyebrow">POSITION</span>
+          <div class="big-position" id="positionTime">--:--</div>
+          <p id="positionText">Select a bus to calculate its scheduled position.</p>
+          <div class="progress"><span id="progressBar"></span></div>
+          <div class="mini-list" id="stopMiniList"></div>
+          <div class="source-note">Scheduled / simulated only. Not GPS-confirmed.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" id="view-buses">
+      <div class="section-head"><div><span class="eyebrow">03 · DIRECTORY</span><h2>Bus Directory</h2></div><div class="count-chip" id="busCount">— buses</div></div>
+      <div class="search-line"><input id="busFilter" placeholder="Search bus number or route…"><select id="busDataset"><option value="general">College timetable</option><option value="firstYear">First-year timetable</option></select></div>
+      <div class="bus-grid" id="busGrid"></div>
+    </section>
+
+    <section class="view" id="view-routes">
+      <div class="section-head"><div><span class="eyebrow">04 · ROUTES</span><h2>Routes & Stops</h2></div></div>
+      <div class="route-switch"><button class="active" data-session="morning">Morning · Stop → College</button><button data-session="evening">Evening · College → Stop</button></div>
+      <div class="routes-list" id="routesList"></div>
+    </section>
+
+    <section class="view" id="view-schedules">
+      <div class="section-head"><div><span class="eyebrow">05 · TIMETABLE</span><h2>Schedules</h2></div></div>
+      <div class="schedule-controls"><select id="scheduleBus"></select><select id="scheduleDataset"><option value="general">College timetable</option><option value="firstYear">First-year timetable</option></select></div>
+      <div class="schedule-card panel" id="scheduleCard"></div>
+    </section>
+
+    <section class="view" id="view-traffic">
+      <div class="section-head"><div><span class="eyebrow">06 · ANALYSIS</span><h2>Traffic Analysis</h2></div></div>
+      <div class="traffic-hero panel">
+        <div><span class="eyebrow">SIMULATION MODEL</span><h3>Monday & Friday are treated as peak days.</h3><p>The official timetable stays unchanged. The traffic layer only estimates an extra travel duration.</p></div>
+        <div class="traffic-number">1.30×<small>peak multiplier</small></div>
+      </div>
+      <div class="traffic-grid" id="trafficGrid"></div>
+      <div class="panel traffic-table"><h3>How it works</h3><p>Peak: 1.30× normal travel duration · Average: 1.10× · Lower: 1.00×. These are configurable demonstration assumptions, not verified live traffic measurements.</p></div>
+    </section>
+
+    <section class="view" id="view-search">
+      <div class="section-head"><div><span class="eyebrow">07 · FIND</span><h2>Search</h2></div></div>
+      <div class="search-big"><input id="globalSearch" placeholder="Search a bus, stop, route or destination…"><span>⌕</span></div>
+      <div id="searchResults" class="search-results"></div>
+    </section>
+
+    <section class="view" id="view-about">
+      <div class="section-head"><div><span class="eyebrow">09 · ABOUT</span><h2>About</h2><p class="muted">A simple guide to this website.</p></div></div>
+      <article class="panel about-panel">
+        <span class="eyebrow">SAEC BUS MAP</span>
+        <h3>College bus information, made simple.</h3>
+        <p>This website helps students explore bus routes, stops, college bus schedules, and timetable-based bus tracking for Syed Ammal Engineering College.</p>
+        <p class="muted">Bus movement is simulated from the timetable. It does not use live GPS tracking.</p>
+      </article>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="section-head"><div><span class="eyebrow">08 · CONTROL</span><h2>Settings</h2></div></div>
+      <div class="settings-grid">
+        <article class="panel setting-row"><div><span class="eyebrow">CLOCK</span><h3>India time</h3><p>Asia/Kolkata · device-synchronised display.</p></div><b>IST</b></article>
+        <article class="panel setting-row"><div><span class="eyebrow">TRACKING</span><h3>Scheduled simulation</h3><p>Never presented as live GPS.</p></div><b>NO GPS</b></article>
+      </div>
+      <div class="panel source-box"><h3>Source handling</h3><p>Bus data in this demo is kept in <code>data.js</code>, separated from the UI so the timetable can be maintained without rewriting the interface.</p><p class="muted">The supplied PDFs provide morning stagewise timings. They do not provide a complete official evening stop-by-stop timetable, so the evening view is explicitly marked as a demo return mode rather than silently inventing an official schedule.</p></div>
+    </section>
+<!-- TIME_TRACKING_COMPONENT -->
+<section class="view time-tracking-view" id="view-time-tracking">
+  <div class="section-head">
+    <div><span class="eyebrow">03 · SCHEDULE SIMULATION</span><h2>Time Tracking</h2><p class="muted">Where the bus should be according to its timetable — not GPS.</p></div>
+    <div class="tt-live-badge"><span></span> CLOCK-SYNCED</div>
+  </div>
+  <div class="tt-controls panel">
+    <div class="seg tt-session"><button class="active" data-tt-session="morning">Morning</button><button data-tt-session="evening">Evening</button></div>
+    <label>Bus <select id="ttBusSelect"></select></label>
+    <label>Timetable <select id="ttDatasetSelect"><option value="general">College timetable</option><option value="firstYear">First-year timetable</option></select></label>
+    <div class="tt-current-time"><span class="tt-current-dot"></span><span>Current India time</span></div>
+  </div>
+  <div class="tt-main-grid">
+    <article class="panel tt-route-card">
+      <div class="tt-route-head"><div><span class="eyebrow" id="ttRouteLabel">MORNING · HOME → COLLEGE</span><h3 id="ttBusTitle">Bus 3</h3></div><div class="tt-status" id="ttStatus">—</div></div>
+      <div class="tt-route-canvas" id="ttRouteCanvas"></div>
+      <div class="tt-progress-wrap"><div id="ttProgress" class="tt-progress-fill"></div></div>
+      <div class="tt-summary"><div><small>Current position</small><b id="ttCurrent">—</b></div><div><small>Next stop</small><b id="ttNext">—</b></div><div><small>Destination</small><b id="ttDestination">—</b></div><div><small>Scheduled arrival</small><b id="ttArrival">—</b></div></div>
+    </article>
+    <aside class="panel tt-side-card">
+      <span class="eyebrow">SCHEDULE CLOCK</span><div class="tt-clock" id="ttClock">--:--:--</div><div class="tt-clock-date" id="ttClockDate">—</div>
+      <div class="tt-explain"><b id="ttExplainTitle">How the marker moves</b><p id="ttExplain">Between two scheduled stops, the marker interpolates by elapsed timetable time. At the exact scheduled minute, it lands on that stop.</p></div>
+      <div class="tt-legend"><span><i class="stop-dot"></i> Bus stop</span><span><i class="college-dot">⌂</i> College</span><span><i class="bus-dot">🚌</i> Simulated bus</span></div>
+    </aside>
+  </div>
+  <div class="panel tt-table-panel"><div class="panel-head"><div><span class="eyebrow">STOP TIMELINE</span><h3 id="ttTimelineTitle">Bus 3 schedule</h3></div><span class="muted" id="ttSourceLabel">Source: college timetable</span></div><div id="ttTimeline" class="tt-timeline"></div></div>
+  <div class="tt-disclaimer">Scheduled simulation only. No GPS, live location API, or random movement is used. Evening schedule: college departure at 4:00 PM; stops run in reverse order using the same stop-to-stop minute gaps as the morning timetable. Evening times are shown in PM.</div>
+</section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="data.js"></script>
+<script src="script.js"></script>
+
+
+
+<nav class="bottom-main-menu" id="bottomMainMenu" aria-label="Main menu">
+  <button data-view="home"><span>⌂</span><small>Home</small></button>
+  <button data-view="dashboard"><span>▦</span><small>Dashboard</small></button>
+  <button data-view="time-tracking"><span>◉</span><small>Time Tracking</small></button>
+  <button data-view="buses"><span>▣</span><small>Buses</small></button>
+  <button data-view="routes"><span>↗</span><small>Routes</small></button>
+  <button data-view="schedules"><span>◷</span><small>Schedules</small></button>
+  <button data-view="traffic"><span>≈</span><small>Traffic</small></button>
+  <button data-view="search"><span>⌕</span><small>Search</small></button>
+  <button data-view="about"><span>ⓘ</span><small>About</small></button>
+</nav>
+
+</body>
+</html>
